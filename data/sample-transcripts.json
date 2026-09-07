@@ -1,0 +1,70 @@
+[
+  {
+    "id": "transcript-001",
+    "title": "Platform Architecture Review — Q3 Planning",
+    "date": "2026-08-25T10:00:00Z",
+    "duration_minutes": 55,
+    "participants": ["Sarah Chen (VP Engineering)", "Marcus Rodriguez (Tech Lead)", "Priya Patel (Backend Lead)", "James O'Brien (DevOps)", "Aisha Kumar (Frontend Lead)"],
+    "source_type": "TRANSCRIPT",
+    "content": [
+      {"time": "00:01:15", "speaker": "Sarah Chen", "text": "Alright everyone, let's get started. The main topic today is our database strategy for the new recommendation engine. Marcus, can you walk us through the options?"},
+      {"time": "00:02:30", "speaker": "Marcus Rodriguez", "text": "Sure. We've evaluated three options: staying with PostgreSQL, migrating to MongoDB for the recommendation data, or using a hybrid approach with PostgreSQL for transactional data and Redis for the recommendation cache."},
+      {"time": "00:04:45", "speaker": "Priya Patel", "text": "I've been running benchmarks. The hybrid approach with PostgreSQL plus Redis gives us 3x better read performance for recommendations while keeping ACID guarantees for transactions."},
+      {"time": "00:06:10", "speaker": "James O'Brien", "text": "From an ops perspective, adding Redis adds complexity. We'd need to set up replication, monitoring, and failover. But it's manageable — we already run Redis for session management."},
+      {"time": "00:08:30", "speaker": "Sarah Chen", "text": "OK, I think the data is clear. We decided to go with the hybrid approach — PostgreSQL for transactions, Redis for recommendation caching. Marcus, can you own the migration plan?"},
+      {"time": "00:09:00", "speaker": "Marcus Rodriguez", "text": "Yes, I'll draft the migration plan. We should have this done by end of September."},
+      {"time": "00:09:45", "speaker": "Sarah Chen", "text": "Great. Next item — we need to deprecate the v1 API. Our analytics show only 3% of traffic still uses it, but those are some enterprise clients."},
+      {"time": "00:11:20", "speaker": "Aisha Kumar", "text": "We should give at least 90 days notice. I'll prepare the deprecation timeline and client communication plan."},
+      {"time": "00:12:30", "speaker": "Sarah Chen", "text": "Agreed. Let's set the deprecation date for December 1st. Aisha will handle the communication, and Priya, can you add sunset headers to the v1 endpoints?"},
+      {"time": "00:13:00", "speaker": "Priya Patel", "text": "Will do. I'll have the sunset headers deployed by next Friday."},
+      {"time": "00:15:30", "speaker": "Marcus Rodriguez", "text": "One more thing — we should also look into migrating our CI/CD pipeline from Jenkins to GitHub Actions. Jenkins has been flaky and the maintenance burden is high."},
+      {"time": "00:17:00", "speaker": "James O'Brien", "text": "I agree. Let's plan the Jenkins to GitHub Actions migration. I can start the proof of concept next sprint."},
+      {"time": "00:18:30", "speaker": "Sarah Chen", "text": "Sounds good. James, you're responsible for the CI/CD migration proof of concept. Let's review it in two weeks. Action item: James to complete PoC by September 8th."},
+      {"time": "00:20:00", "speaker": "Marcus Rodriguez", "text": "Also, going forward, all new services must use OpenTelemetry for observability. No more custom logging solutions."},
+      {"time": "00:21:30", "speaker": "Sarah Chen", "text": "Yes, that's the standard going forward. Let's document that as an ADR. Marcus, can you write it up?"},
+      {"time": "00:22:00", "speaker": "Marcus Rodriguez", "text": "I'll have the ADR drafted by end of this week."}
+    ]
+  },
+  {
+    "id": "transcript-002",
+    "title": "Microservices Decomposition — Authentication Service",
+    "date": "2026-08-28T14:00:00Z",
+    "duration_minutes": 40,
+    "participants": ["Marcus Rodriguez (Tech Lead)", "David Kim (Security Lead)", "Priya Patel (Backend Lead)", "Lisa Wang (SRE)"],
+    "source_type": "TRANSCRIPT",
+    "content": [
+      {"time": "00:01:00", "speaker": "Marcus Rodriguez", "text": "Today we need to finalize the approach for extracting the authentication module into its own service. David, what's the security assessment?"},
+      {"time": "00:02:30", "speaker": "David Kim", "text": "The current monolith handles auth in three places — login, API keys, and OAuth. We need to consolidate these. My recommendation is to use a dedicated auth service with JWT tokens and centralized key management."},
+      {"time": "00:04:00", "speaker": "Priya Patel", "text": "JWT makes sense but we need to handle token revocation. I suggest we implement a token blacklist in Redis — it ties into our existing Redis infrastructure."},
+      {"time": "00:05:30", "speaker": "David Kim", "text": "Agreed. The plan is to use JWT with Redis-backed revocation. We also need to implement mTLS between services for the auth service communication."},
+      {"time": "00:07:00", "speaker": "Marcus Rodriguez", "text": "We agreed to implement JWT with Redis-backed token revocation and mTLS for inter-service auth. David, you'll lead this. What's the timeline?"},
+      {"time": "00:08:00", "speaker": "David Kim", "text": "This is a significant change that affects every service. I'd say 6 weeks minimum. We should target mid-October for the initial rollout."},
+      {"time": "00:09:30", "speaker": "Lisa Wang", "text": "From an SRE perspective, we need canary deployments for this. If the auth service goes down, everything goes down. I'll set up the canary pipeline."},
+      {"time": "00:10:30", "speaker": "Marcus Rodriguez", "text": "Good point. Lisa, please have the canary deployment pipeline ready by September 15th. Also, we need a circuit breaker pattern — if the auth service is unresponsive, services should fall back to cached tokens for up to 5 minutes."},
+      {"time": "00:12:00", "speaker": "Lisa Wang", "text": "I'll implement the circuit breaker. Someone needs to write the runbook for auth service incidents too."},
+      {"time": "00:13:00", "speaker": "Marcus Rodriguez", "text": "David, can you write the incident runbook? Let's have it before we go to production."},
+      {"time": "00:13:30", "speaker": "David Kim", "text": "Will do. I'll have the runbook ready by October 1st."}
+    ]
+  },
+  {
+    "id": "transcript-003",
+    "title": "Frontend Architecture — Design System Migration",
+    "date": "2026-09-01T11:00:00Z",
+    "duration_minutes": 35,
+    "participants": ["Aisha Kumar (Frontend Lead)", "Tom Chen (Design Lead)", "Marcus Rodriguez (Tech Lead)", "Nina Gonzalez (Frontend Engineer)"],
+    "source_type": "TRANSCRIPT",
+    "content": [
+      {"time": "00:01:30", "speaker": "Aisha Kumar", "text": "We're here to discuss migrating from our custom CSS framework to a shared design system. Tom, what's the design team's recommendation?"},
+      {"time": "00:03:00", "speaker": "Tom Chen", "text": "We've built a component library in Figma that covers 85% of our UI patterns. The decision is to build our own design system package using Web Components, so it's framework-agnostic."},
+      {"time": "00:04:30", "speaker": "Nina Gonzalez", "text": "Web Components have some gotchas with SSR. We should use Lit instead of raw Web Components — it handles hydration better."},
+      {"time": "00:06:00", "speaker": "Aisha Kumar", "text": "Good point. Let's go with Lit for the design system implementation. Tom, can your team maintain the Figma-to-code pipeline?"},
+      {"time": "00:07:00", "speaker": "Tom Chen", "text": "Yes, we'll set up Storybook and keep Figma synced. The design system package should be published to our internal npm registry."},
+      {"time": "00:08:30", "speaker": "Marcus Rodriguez", "text": "What's the migration strategy for existing apps? We have 12 frontend applications."},
+      {"time": "00:09:30", "speaker": "Aisha Kumar", "text": "We should adopt a strangler pattern. New features use the design system, existing pages migrate incrementally. Nina, can you create the migration guide and prioritize which apps to migrate first?"},
+      {"time": "00:10:30", "speaker": "Nina Gonzalez", "text": "Sure. I'll have the migration guide ready by September 10th. I suggest we start with the dashboard app since it has the most users."},
+      {"time": "00:12:00", "speaker": "Aisha Kumar", "text": "We agreed to use Lit-based design system with strangler pattern migration. The design system v1 should be ready by October 15th. Tom owns the component library, Nina owns the migration guide."},
+      {"time": "00:13:30", "speaker": "Marcus Rodriguez", "text": "One thing — we need to add bundle size monitoring. Someone should set up a size-limit CI check so the design system doesn't bloat over time."},
+      {"time": "00:14:00", "speaker": "Nina Gonzalez", "text": "I'll add size-limit to the CI pipeline. Should be straightforward."}
+    ]
+  }
+]

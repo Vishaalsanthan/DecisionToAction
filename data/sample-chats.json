@@ -1,0 +1,76 @@
+[
+  {
+    "id": "chat-001",
+    "channel": "#architecture-decisions",
+    "thread_title": "Database sharding strategy",
+    "date": "2026-08-26T09:15:00Z",
+    "source_type": "CHAT",
+    "messages": [
+      {"time": "09:15:00", "sender": "Marcus Rodriguez", "text": "Hey team, following up on yesterday's meeting. I've been thinking about the sharding strategy for the user table. We're approaching 500M rows and queries are slowing down."},
+      {"time": "09:18:00", "sender": "Priya Patel", "text": "We should shard by user_id range. Geographic sharding would be cleaner but our user distribution is too skewed."},
+      {"time": "09:22:00", "sender": "James O'Brien", "text": "Agree with @Priya. Hash-based sharding on user_id gives us even distribution. We can use Vitess as the proxy layer."},
+      {"time": "09:30:00", "sender": "Marcus Rodriguez", "text": "OK, we'll go with hash-based sharding using Vitess. @James can you set up a Vitess PoC environment by next Wednesday?"},
+      {"time": "09:32:00", "sender": "James O'Brien", "text": "On it. I'll have the Vitess PoC running on staging by Wednesday Sept 3rd."},
+      {"time": "09:35:00", "sender": "Priya Patel", "text": "We also need to update the data access layer. I'll refactor the repository pattern to support shard-aware queries. Should take about a week."},
+      {"time": "09:40:00", "sender": "Marcus Rodriguez", "text": "Great. Let's sync next Thursday to review the PoC results. This is a big change — we should get Sarah's sign-off before proceeding to production."}
+    ]
+  },
+  {
+    "id": "chat-002",
+    "channel": "#backend-team",
+    "thread_title": "Event sourcing for order service",
+    "date": "2026-08-27T14:30:00Z",
+    "source_type": "CHAT",
+    "messages": [
+      {"time": "14:30:00", "sender": "Priya Patel", "text": "Proposal: migrate the order service from CRUD to event sourcing. Current issues: audit trail is incomplete, we can't replay state, and debugging production issues is painful."},
+      {"time": "14:35:00", "sender": "David Kim", "text": "Event sourcing is a big architectural shift. What's the estimated effort?"},
+      {"time": "14:38:00", "sender": "Priya Patel", "text": "About 3 sprints for the core event store, then 2 more for migrating existing orders. We'd use Kafka as the event bus."},
+      {"time": "14:42:00", "sender": "Marcus Rodriguez", "text": "I like this. The decision is to adopt event sourcing for the order service using Kafka. Priya, can you write up the technical design doc by September 5th?"},
+      {"time": "14:45:00", "sender": "Priya Patel", "text": "Will do. I'll include the migration strategy and rollback plan."},
+      {"time": "14:48:00", "sender": "David Kim", "text": "Make sure to consider GDPR implications — event stores make data deletion harder. We need a strategy for handling deletion requests."},
+      {"time": "14:50:00", "sender": "Priya Patel", "text": "Good catch. I'll add a crypto-shredding approach for GDPR compliance in the design doc."}
+    ]
+  },
+  {
+    "id": "chat-003",
+    "channel": "#frontend-team",
+    "thread_title": "State management migration",
+    "date": "2026-08-29T10:00:00Z",
+    "source_type": "CHAT",
+    "messages": [
+      {"time": "10:00:00", "sender": "Aisha Kumar", "text": "We need to standardize our state management. Currently we have Redux in 3 apps, MobX in 2, and plain React context in 4. This is unsustainable."},
+      {"time": "10:05:00", "sender": "Nina Gonzalez", "text": "I've evaluated options. Zustand is the most lightweight and has the best DX. It's also compatible with our SSR setup."},
+      {"time": "10:08:00", "sender": "Tom Chen", "text": "From a design system perspective, we should use Zustand. It integrates well with our component architecture."},
+      {"time": "10:12:00", "sender": "Aisha Kumar", "text": "Let's go with Zustand as our standard state management solution. @Nina, can you create a migration playbook by September 8th? Include examples for converting from Redux and MobX."},
+      {"time": "10:15:00", "sender": "Nina Gonzalez", "text": "Sure thing. I'll also set up an eslint rule to flag new Redux/MobX usage."}
+    ]
+  },
+  {
+    "id": "chat-004",
+    "channel": "#devops",
+    "thread_title": "Kubernetes cluster upgrade",
+    "date": "2026-09-02T08:00:00Z",
+    "source_type": "CHAT",
+    "messages": [
+      {"time": "08:00:00", "sender": "James O'Brien", "text": "Our k8s clusters are running 1.27, which goes EOL in October. We need to upgrade to 1.29."},
+      {"time": "08:05:00", "sender": "Lisa Wang", "text": "We should upgrade to 1.29 — it has the KEP for sidecar containers which we need for the service mesh."},
+      {"time": "08:10:00", "sender": "James O'Brien", "text": "Agreed. The plan is to upgrade staging first, then production with a 1-week bake time. @Lisa, can you handle the staging upgrade by September 10th?"},
+      {"time": "08:12:00", "sender": "Lisa Wang", "text": "Yes. I'll do staging first. Production upgrade should happen during our next maintenance window on September 20th."},
+      {"time": "08:15:00", "sender": "James O'Brien", "text": "We also need to update all Helm charts for compatibility. Someone from each team needs to test their services on staging after the upgrade."}
+    ]
+  },
+  {
+    "id": "chat-005",
+    "channel": "#architecture-decisions",
+    "thread_title": "API versioning strategy change",
+    "date": "2026-09-03T16:00:00Z",
+    "source_type": "CHAT",
+    "messages": [
+      {"time": "16:00:00", "sender": "Marcus Rodriguez", "text": "Quick thread: we currently use URL-based API versioning (/v1/, /v2/) but it's causing routing complexity. Proposal to switch to header-based versioning."},
+      {"time": "16:05:00", "sender": "Aisha Kumar", "text": "Header-based is harder for frontend to debug. Can we use a hybrid — URL for major versions, headers for minor?"},
+      {"time": "16:10:00", "sender": "Priya Patel", "text": "I like the hybrid approach. It keeps things debuggable while reducing route duplication."},
+      {"time": "16:15:00", "sender": "Marcus Rodriguez", "text": "OK, we agreed on hybrid API versioning: URL path for major versions, Accept-Version header for minor versions. I'll update the API standards doc. @Priya, can you implement this in the API gateway by September 12th?"},
+      {"time": "16:18:00", "sender": "Priya Patel", "text": "Will do. I'll also add gateway middleware to handle the version negotiation."}
+    ]
+  }
+]

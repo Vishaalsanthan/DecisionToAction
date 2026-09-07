@@ -1,0 +1,66 @@
+[
+  {
+    "id": "adr-001",
+    "title": "ADR-001: Adopt OpenTelemetry for Distributed Tracing",
+    "status": "ACCEPTED",
+    "date": "2026-08-20T10:00:00Z",
+    "source_type": "DECISION_RECORD",
+    "author": "Marcus Rodriguez (Tech Lead)",
+    "context": "Our transition from a monolith to microservices requires unified observability across services written in Go, TypeScript, and Python. Custom logging has led to blind spots during production incidents.",
+    "decision": "We decided to adopt OpenTelemetry as the standard observability framework across all backend services. All new services must implement OTel tracing and export to our central Jaeger/Prometheus backend.",
+    "consequences": {
+      "positive": ["Unified trace IDs across all service boundaries", "Vendor-neutral instrumentation", "Standardized metric export format"],
+      "negative": ["Initial migration effort for legacy services", "Memory overhead of OTel collector sidecars"]
+    },
+    "impact": "MEDIUM",
+    "tags": ["observability", "opentelemetry", "tracing", "architecture"]
+  },
+  {
+    "id": "adr-002",
+    "title": "ADR-002: Vitess Sharding for High-Volume User Tables",
+    "status": "ACCEPTED",
+    "date": "2026-08-27T16:00:00Z",
+    "source_type": "DECISION_RECORD",
+    "author": "Priya Patel (Backend Lead)",
+    "context": "User tables have exceeded 450M rows, causing p99 query latency degradation on identity lookups. Single-instance PostgreSQL vertical scaling is nearing its hardware limit.",
+    "decision": "We decided to implement hash-based sharding on user_id using Vitess as the distributed database proxy layer. The transition will begin with a non-production proof of concept followed by phased production cutover.",
+    "consequences": {
+      "positive": ["Horizontal scalability to billions of records", "Transparent SQL routing for application tier", "Independent shard maintenance and backup"],
+      "negative": ["Cross-shard queries have latency penalty", "Operational complexity of managing Vitess clusters"]
+    },
+    "impact": "HIGH",
+    "tags": ["database", "vitess", "sharding", "scalability"]
+  },
+  {
+    "id": "adr-003",
+    "title": "ADR-003: Deprecate Legacy REST API v1 in Favor of v2 gRPC and REST",
+    "status": "PROPOSED",
+    "date": "2026-08-30T11:30:00Z",
+    "source_type": "DECISION_RECORD",
+    "author": "Sarah Chen (VP Engineering)",
+    "context": "API v1 suffers from inconsistent response envelopes, unversioned schema mutations, and lack of rate limiting. Only 3% of active traffic originates from v1, but maintenance overhead remains significant.",
+    "decision": "We decided to deprecate internal and external v1 API endpoints with an effective sunset date of December 1st, 2026. Deprecation notice and migration docs will be issued with mandatory 90-day lead time.",
+    "consequences": {
+      "positive": ["Reduction of attack surface and code maintenance", "Enforces modern protobuf/JSON schemas", "Cost savings on legacy server fleets"],
+      "negative": ["Requires coordinated migration with enterprise partners", "Risk of breaking downstream third-party integrations"]
+    },
+    "impact": "HIGH",
+    "tags": ["api", "deprecation", "breaking-change", "security"]
+  },
+  {
+    "id": "adr-004",
+    "title": "ADR-004: Standardize Frontend State Management on Zustand",
+    "status": "ACCEPTED",
+    "date": "2026-09-02T14:15:00Z",
+    "source_type": "DECISION_RECORD",
+    "author": "Aisha Kumar (Frontend Lead)",
+    "context": "Multiple frontend repositories currently utilize a fragmented set of state management libraries (Redux Toolkit, MobX, Context API), resulting in slow developer onboarding and code reuse barriers.",
+    "decision": "Let's standardize on Zustand for all client-side global state management across web applications. Legacy Redux stores will be migrated incrementally during regular feature iterations.",
+    "consequences": {
+      "positive": ["Drastic reduction in boilerplate code", "Lightweight bundle size (<1KB minified)", "Seamless SSR compatibility with Next.js"],
+      "negative": ["Learning curve for developers accustomed to Redux devtools action replay"]
+    },
+    "impact": "MEDIUM",
+    "tags": ["frontend", "zustand", "react", "architecture"]
+  }
+]

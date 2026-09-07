@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Decision-to-Action Extractor (D2A) — Architectural Decision Governance</title>
+  <meta name="description" content="Autonomous system that ingests engineering meeting transcripts, chat threads, and ADRs, extracts architectural decisions, assigns owners and deadlines, requires human confirmation for high-impact actions, and maintains an immutable audit trail.">
+  
+  <!-- Modern Typography Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Design System Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div class="app-container" id="appContainer">
+    <!-- Sidebar Navigation -->
+    <aside class="app-sidebar" id="appSidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon" id="brandIcon">⚡</div>
+        <div class="brand-info">
+          <span class="brand-title">D2A Platform</span>
+          <span class="brand-subtitle">Decision Intelligence</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-menu" id="sidebarMenu" aria-label="Main Navigation">
+        <a href="#overview" class="nav-item active" data-tab="overview" id="navOverview">
+          <div class="nav-item-content">
+            <span class="nav-icon">📊</span>
+            <span>Dashboard</span>
+          </div>
+        </a>
+
+        <a href="#decisions" class="nav-item" data-tab="decisions" id="navDecisions">
+          <div class="nav-item-content">
+            <span class="nav-icon">🧠</span>
+            <span>Decision Feed</span>
+          </div>
+        </a>
+
+        <a href="#actions" class="nav-item" data-tab="actions" id="navActions">
+          <div class="nav-item-content">
+            <span class="nav-icon">⚡</span>
+            <span>Action Tracker</span>
+          </div>
+          <span class="nav-badge danger" id="sidebarPendingBadge" style="display:none;">0</span>
+        </a>
+
+        <a href="#audit" class="nav-item" data-tab="audit" id="navAudit">
+          <div class="nav-item-content">
+            <span class="nav-icon">🛡️</span>
+            <span>Audit & Compliance</span>
+          </div>
+        </a>
+
+        <a href="#metrics" class="nav-item" data-tab="metrics" id="navMetrics">
+          <div class="nav-item-content">
+            <span class="nav-icon">📈</span>
+            <span>Metrics & Validation</span>
+          </div>
+        </a>
+
+        <a href="#edge-cases" class="nav-item" data-tab="edge-cases" id="navEdgeCases">
+          <div class="nav-item-content">
+            <span class="nav-icon">🧪</span>
+            <span>Degradation Lab</span>
+          </div>
+        </a>
+
+        <a href="#sources" class="nav-item" data-tab="sources" id="navSources">
+          <div class="nav-item-content">
+            <span class="nav-icon">🔌</span>
+            <span>Data Ingestion</span>
+          </div>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="system-status-box" id="systemStatusBox">
+          <div class="status-indicator">
+            <span class="status-dot" id="systemStatusDot"></span>
+            <span id="systemStatusText">All Systems Operational</span>
+          </div>
+          <span style="font-size:11px; font-weight:600; color:var(--text-muted);">v1.0 MVP</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Application Shell -->
+    <main class="app-main" id="appMain">
+      <header class="app-header" id="appHeader">
+        <div class="header-left">
+          <div>
+            <h1 class="page-title" id="pageTitle">Executive Overview</h1>
+            <div class="page-breadcrumb" id="pageBreadcrumb">D2A System / Executive Overview</div>
+          </div>
+        </div>
+
+        <div class="header-actions" id="headerActions">
+          <button class="btn btn-secondary btn-sm" id="btnResetDemo" onclick="App.resetDemoData()">
+            ↺ Reset Demo
+          </button>
+          <button class="btn btn-primary btn-sm" id="btnSyncIngestion" onclick="App.runFullIngestion()">
+            ⚡ Ingest & Extract
+          </button>
+        </div>
+      </header>
+
+      <!-- Dynamic Page Container -->
+      <section class="page-body" id="pageBody">
+        <!-- Injected dynamically via Dashboard.renderCurrentTab() -->
+      </section>
+    </main>
+  </div>
+
+  <!-- Global Modal Dialog for Confirmations, Overrides, Rollbacks and Inspection -->
+  <div class="modal-overlay" id="globalModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">Modal Dialog</h3>
+        <button class="modal-close" id="modalCloseBtn" onclick="Dashboard.closeModal()" aria-label="Close dialog">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Content injected dynamically -->
+      </div>
+      <div class="modal-footer" id="modalFooter">
+        <button class="btn btn-secondary" onclick="Dashboard.closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Application Modules -->
+  <script src="js/utils.js"></script>
+  <script src="js/audit.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/extraction.js"></script>
+  <script src="js/actions.js"></script>
+  <script src="js/metrics.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

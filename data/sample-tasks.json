@@ -1,0 +1,104 @@
+[
+  {
+    "id": "task-001",
+    "key": "ENG-4102",
+    "title": "Set up Vitess proof-of-concept environment on staging",
+    "assignee": "James O'Brien",
+    "status": "IN_PROGRESS",
+    "priority": "HIGH",
+    "due_date": "2026-09-03",
+    "source_type": "TASK",
+    "description": "Deploy a 2-shard Vitess cluster on Kubernetes staging namespace to benchmark shard rebalancing and query routing under synthetic load.",
+    "linked_decision_id": "adr-002",
+    "comments": [
+      {"author": "James O'Brien", "date": "2026-08-28T11:00:00Z", "text": "Helm charts configured. Awaiting staging cluster node group resize."},
+      {"author": "Priya Patel", "date": "2026-08-29T15:30:00Z", "text": "Node group resized. Ready for benchmark workload generation."}
+    ],
+    "completion_status": {
+      "percent": 65,
+      "last_updated": "2026-08-29T15:30:00Z",
+      "notes": "Vitess proxy deployed, benchmark script preparing 50M rows"
+    }
+  },
+  {
+    "id": "task-002",
+    "key": "ENG-4108",
+    "title": "Draft OpenTelemetry instrumentation guidelines ADR",
+    "assignee": "Marcus Rodriguez",
+    "status": "COMPLETED",
+    "priority": "MEDIUM",
+    "due_date": "2026-08-29",
+    "source_type": "TASK",
+    "description": "Document standard naming conventions, span attributes, and sampling rates for OTel across all microservices.",
+    "linked_decision_id": "adr-001",
+    "comments": [
+      {"author": "Marcus Rodriguez", "date": "2026-08-27T09:00:00Z", "text": "Draft posted to Confluence for team review."},
+      {"author": "Sarah Chen", "date": "2026-08-28T14:20:00Z", "text": "Approved. Merged as ADR-001."}
+    ],
+    "completion_status": {
+      "percent": 100,
+      "last_updated": "2026-08-28T14:20:00Z",
+      "notes": "ADR merged and published to engineering wiki"
+    }
+  },
+  {
+    "id": "task-003",
+    "key": "ENG-4120",
+    "title": "Add sunset headers and warning logs to API v1 endpoints",
+    "assignee": "Priya Patel",
+    "status": "PENDING",
+    "priority": "HIGH",
+    "due_date": "2026-09-04",
+    "source_type": "TASK",
+    "description": "Inject Sunset: Tue, 01 Dec 2026 00:00:00 GMT and Link headers into all v1 controller responses, with deprecation warnings in response bodies.",
+    "linked_decision_id": "adr-003",
+    "comments": [
+      {"author": "Priya Patel", "date": "2026-08-31T10:15:00Z", "text": "Middleware branch created. Testing with mock enterprise clients."}
+    ],
+    "completion_status": {
+      "percent": 30,
+      "last_updated": "2026-08-31T10:15:00Z",
+      "notes": "Sunset middleware written, automated tests in progress"
+    }
+  },
+  {
+    "id": "task-004",
+    "key": "ENG-4135",
+    "title": "Create Zustand state migration playbook with Redux/MobX examples",
+    "assignee": "Nina Gonzalez",
+    "status": "IN_PROGRESS",
+    "priority": "MEDIUM",
+    "due_date": "2026-09-08",
+    "source_type": "TASK",
+    "description": "Provide boilerplate, hook patterns, and unit testing guidelines for migrating existing React components from Redux/MobX to Zustand stores.",
+    "linked_decision_id": "adr-004",
+    "comments": [
+      {"author": "Nina Gonzalez", "date": "2026-09-03T16:45:00Z", "text": "Redux comparison chapter completed. Working on MobX store conversion patterns."}
+    ],
+    "completion_status": {
+      "percent": 50,
+      "last_updated": "2026-09-03T16:45:00Z",
+      "notes": "Playbook draft in review with frontend chapter"
+    }
+  },
+  {
+    "id": "task-005",
+    "key": "ENG-4150",
+    "title": "Implement canary deployment pipeline for auth service extraction",
+    "assignee": "Lisa Wang",
+    "status": "IN_PROGRESS",
+    "priority": "HIGH",
+    "due_date": "2026-09-15",
+    "source_type": "TASK",
+    "description": "Configure Argo Rollouts with automated metric analysis (error rate < 0.1%, latency p95 < 25ms) for auth service canary releases.",
+    "linked_decision_id": "transcript-002",
+    "comments": [
+      {"author": "Lisa Wang", "date": "2026-09-02T13:10:00Z", "text": "Argo Rollouts manifest drafted. Simulating traffic shifts in staging."}
+    ],
+    "completion_status": {
+      "percent": 40,
+      "last_updated": "2026-09-02T13:10:00Z",
+      "notes": "Canary step rules validated against Datadog metrics"
+    }
+  }
+]

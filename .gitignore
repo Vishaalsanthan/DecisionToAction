@@ -1,0 +1,17 @@
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor directories
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Node / Package managers (if any in future)
+node_modules/
+package-lock.json
+
+# Logs
+*.log

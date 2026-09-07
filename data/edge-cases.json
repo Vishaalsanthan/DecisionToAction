@@ -1,0 +1,118 @@
+[
+  {
+    "id": "edge-001",
+    "title": "Missing Data Source — Transcripts Unavailable",
+    "description": "Meeting transcript service has been down for 6 hours. Chat and task data still flowing.",
+    "scenario": "MISSING_SOURCE",
+    "affected_source": "TRANSCRIPT",
+    "source_health": {
+      "TRANSCRIPT": {"status": "MISSING", "last_sync": "2026-09-05T04:00:00Z", "error": "Service timeout after 3 retries"},
+      "CHAT": {"status": "ACTIVE", "last_sync": "2026-09-05T10:00:00Z"},
+      "TASK": {"status": "ACTIVE", "last_sync": "2026-09-05T10:00:00Z"},
+      "DECISION_RECORD": {"status": "ACTIVE", "last_sync": "2026-09-05T09:30:00Z"},
+      "COMPLETION_UPDATE": {"status": "DELAYED", "last_sync": "2026-09-05T08:00:00Z", "error": "Sync lag: 2 hours"}
+    },
+    "expected_behavior": "System processes available sources, marks transcript-dependent decisions as 'partial evidence', shows degradation warning on dashboard",
+    "partial_decision": {
+      "title": "Migrate to GraphQL Federation",
+      "source": "Chat thread only (transcript unavailable)",
+      "confidence": 0.55,
+      "confidence_note": "Reduced confidence due to missing transcript corroboration",
+      "evidence": ["Chat #architecture-decisions: Marcus mentioned 'we discussed GraphQL federation in today's meeting and the team agreed'"],
+      "warning": "This decision was referenced in chat but the original meeting transcript is unavailable. Confidence reduced by 35%."
+    }
+  },
+  {
+    "id": "edge-002",
+    "title": "Contradictory Decisions Across Sources",
+    "description": "Monday's meeting transcript says 'Use PostgreSQL for analytics' but Wednesday's chat thread says 'Team agreed on ClickHouse for analytics'.",
+    "scenario": "CONTRADICTION",
+    "conflicting_decisions": [
+      {
+        "source": "transcript-meeting-analytics-review",
+        "date": "2026-09-01T10:00:00Z",
+        "decision": "Use PostgreSQL with materialized views for analytics workloads",
+        "speaker": "Marcus Rodriguez",
+        "context": "During the analytics architecture review meeting",
+        "confidence": 0.88
+      },
+      {
+        "source": "chat-data-team-analytics",
+        "date": "2026-09-03T15:00:00Z",
+        "decision": "Migrate analytics to ClickHouse for better columnar performance",
+        "speaker": "Priya Patel",
+        "context": "Follow-up chat after benchmarking new data",
+        "confidence": 0.82
+      }
+    ],
+    "expected_behavior": "System detects semantic similarity between decisions, flags as CONFLICT, requires human resolution before generating actions",
+    "resolution_options": [
+      "Keep Decision 1 (PostgreSQL) — the later chat discussion is a proposal, not a final decision",
+      "Keep Decision 2 (ClickHouse) — the chat reflects updated information from benchmarks",
+      "Merge — use ClickHouse for heavy analytics, PostgreSQL for operational reports",
+      "Escalate — flag for architecture review board decision"
+    ]
+  },
+  {
+    "id": "edge-003",
+    "title": "Ambiguous Owner Assignment",
+    "description": "Transcript says 'someone from the platform team should set up the monitoring dashboard' but no specific person is named.",
+    "scenario": "AMBIGUOUS_OWNER",
+    "extracted_action": {
+      "title": "Set up monitoring dashboard for new microservices",
+      "description": "Implement comprehensive monitoring dashboard covering all new microservices with SLO tracking",
+      "owner": null,
+      "owner_hint": "platform team",
+      "deadline": null,
+      "deadline_hint": "before production rollout",
+      "impact": "MEDIUM",
+      "confidence": 0.72
+    },
+    "suggested_owners": [
+      {"name": "James O'Brien", "role": "DevOps Lead", "reason": "Platform team lead, most relevant domain expertise", "confidence": 0.7},
+      {"name": "Lisa Wang", "role": "SRE", "reason": "SRE with monitoring experience, part of platform team", "confidence": 0.6},
+      {"name": "Unassigned", "role": "Platform Team", "reason": "Let team self-assign", "confidence": 0.3}
+    ],
+    "expected_behavior": "Action created with owner marked as 'UNASSIGNED — Platform Team'. Flagged for human assignment with suggested owners ranked by confidence. Escalation after 48 hours if still unassigned."
+  },
+  {
+    "id": "edge-004",
+    "title": "High-Impact Action Requiring Rollback",
+    "description": "A previously confirmed decision to deprecate internal gRPC v1 endpoints needs to be rolled back because a critical downstream service was discovered that still depends on it.",
+    "scenario": "ROLLBACK",
+    "original_action": {
+      "id": "action-rollback-001",
+      "title": "Deprecate internal gRPC v1 endpoints",
+      "owner": "Priya Patel",
+      "impact": "HIGH",
+      "status": "CONFIRMED",
+      "confirmed_by": "Sarah Chen",
+      "confirmed_at": "2026-08-28T09:00:00Z"
+    },
+    "rollback_trigger": "Discovery of payment processing service still using gRPC v1 — deprecation would cause payment failures",
+    "rollback_action": {
+      "initiated_by": "David Kim",
+      "reason": "Critical dependency discovered: payment-processing-service v3.2.1 uses gRPC v1 for all transaction calls. Deprecating would cause immediate payment failures affecting ~$2M daily volume.",
+      "rollback_to_status": "ROLLED_BACK",
+      "follow_up_decision": "Re-evaluate gRPC v1 deprecation after payment service is migrated to v2 (estimated Q1 2027)"
+    },
+    "expected_behavior": "System records rollback with full audit trail, preserves original confirmation evidence, creates new decision record linking to the rollback, sends notification to original confirmer"
+  },
+  {
+    "id": "edge-005",
+    "title": "Delayed Data Source Recovery and Backfill",
+    "description": "Task management system was down for 12 hours. When it recovers, 15 task updates need to be backfilled without creating duplicates.",
+    "scenario": "DELAYED_RECOVERY",
+    "timeline": [
+      {"time": "2026-09-04T22:00:00Z", "event": "Jira sync fails — connection timeout"},
+      {"time": "2026-09-04T22:05:00Z", "event": "D2A marks TASK source as DELAYED"},
+      {"time": "2026-09-04T23:00:00Z", "event": "Retry #1 fails — Jira still down"},
+      {"time": "2026-09-05T02:00:00Z", "event": "D2A marks TASK source as MISSING (>4h)"},
+      {"time": "2026-09-05T10:00:00Z", "event": "Jira recovers — 15 pending updates queued"},
+      {"time": "2026-09-05T10:01:00Z", "event": "D2A begins backfill processing"},
+      {"time": "2026-09-05T10:05:00Z", "event": "Deduplication removes 3 redundant updates"},
+      {"time": "2026-09-05T10:06:00Z", "event": "12 updates processed, source marked ACTIVE"}
+    ],
+    "expected_behavior": "System handles outage gracefully: continues with available sources during downtime, backfills when source recovers, deduplicates against existing data, marks source health correctly throughout lifecycle"
+  }
+]
